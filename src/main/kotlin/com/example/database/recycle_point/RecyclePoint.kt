@@ -1,5 +1,6 @@
 package com.example.database.recycle_point
 
+import com.example.database.recycle_point_category.RecyclePointCategory
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
@@ -17,7 +18,7 @@ object RecyclePoint: Table("recycle_points") {
     val working_hours = RecyclePoint.text("working_hours")
 
 
-    fun insert(recyclePointDTO: RecyclePointDTO) {
+    fun insert(recyclePointDTO: RecyclePointDTO, categoryId: List<String>) {
         transaction {
             RecyclePoint.insert {
                 it[id] = recyclePointDTO.id
@@ -29,6 +30,13 @@ object RecyclePoint: Table("recycle_points") {
                 it[longitude] = recyclePointDTO.longitude
                 it[address] = recyclePointDTO.address
                 it[working_hours] = recyclePointDTO.working_hours
+            }
+
+            categoryId.forEach { categoryId ->
+                RecyclePointCategory.insert {
+                    it[this.recyclePointId] = recyclePointDTO.id
+                    it[this.categoryId] = categoryId
+                }
             }
         }
     }
@@ -56,4 +64,12 @@ object RecyclePoint: Table("recycle_points") {
             emptyList()
         }
     }
+
+//    fun fetchRecycePointsByCategory(category: String) {
+//        return try {
+//            transaction {
+//                RecyclePoint
+//            }
+//        }
+//    }
 }
